@@ -1,5 +1,6 @@
 package tbook.cartService.service;
 
+import tbook.cartService.dto.CartGetProductRequest;
 import tbook.cartService.dto.CartRequest;
 import tbook.cartService.dto.CartResponse;
 import tbook.cartService.entity.Cart;
@@ -7,9 +8,9 @@ import tbook.cartService.entity.Cart;
 import java.util.List;
 
 public interface CartService {
-    List<CartResponse> getAllCarts();
+    List<CartResponse> getAllCartsByUserId(String userId);
 
-    CartResponse addToCart(CartRequest cartRequest);
+    void createCart(CartGetProductRequest cartGetProductRequest);
 
     void deleteCart(Long cartId);
 

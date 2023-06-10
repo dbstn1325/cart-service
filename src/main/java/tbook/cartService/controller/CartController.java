@@ -2,14 +2,19 @@ package tbook.cartService.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import tbook.cartService.dto.CartGetProductRequest;
 import tbook.cartService.dto.CartRequest;
 import tbook.cartService.dto.CartResponse;
 import tbook.cartService.entity.Cart;
+import tbook.cartService.model.response.ListResult;
 import tbook.cartService.repository.CartRepository;
 import tbook.cartService.service.CartService;
+import tbook.cartService.service.response.ResponseService;
 
 import java.util.List;
 
@@ -21,23 +26,25 @@ public class CartController {
 
     private final CartService cartService;
     private final CartRepository cartRepository;
+    private final ResponseService responseService;
 
     // 장바구니 전체 조회
-    @GetMapping("/carts")
-    public ResponseEntity<List<CartResponse>> getAllCarts() {
-        List<CartResponse> carts = cartService.getAllCarts();
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(carts);
+    @GetMapping("/{userId}/carts")
+    public ListResult<CartResponse> getAllCartsByUserId(@PathVariable("userId") String userId) {
+        return responseService.getListResult(
+                cartService.getAllCartsByUserId(userId)
+        );
     }
 
     // 장바구니에 상품 추가
-    @PostMapping("/carts")
-    public ResponseEntity<CartResponse> addToCart(@RequestBody CartRequest cartRequest) {
-        CartResponse cart = cartService.addToCart(cartRequest);
-        return ResponseEntity
-                .status(HttpStatus.CREATED)
-                .body(cart);
+    @PostMapping("/{userId}/carts")
+    public void addToCart(@PathVariable("userId") String userId, @RequestBody CartRequest cartRequest) {
+        // CartRequstDto -> CartDto
+        ModelMapper modelMapper = new ModelMapper();
+        CartGetProductRequest cartGetProductRequest = modelMapper.map(cartRequest, CartGetProductRequest.class);
+        cartGetProductRequest.setUserId(userId);
+
+        cartService.createCart(cartGetProductRequest);
     }
 
     // 장바구니에 상품 삭제
