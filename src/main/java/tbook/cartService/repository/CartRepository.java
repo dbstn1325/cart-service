@@ -11,4 +11,5 @@ import java.util.Optional;
 public interface CartRepository extends JpaRepository<Cart, Long> {
 //    boolean existsByProductName(String productName);
     Optional<List<Cart>> findByUserId(String userId);
+    List<Cart> findByUserIdAndProductId(String userId, String productId);
 }
