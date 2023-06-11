@@ -38,6 +38,8 @@ dependencies {
 	implementation 'org.springframework.kafka:spring-kafka'
 	// modelMapper
 	implementation 'org.modelmapper:modelmapper:2.4.4'
+//	// security
+//	implementation 'org.springframework.boot:spring-boot-starter-security'
 }
 
 dependencyManagement {

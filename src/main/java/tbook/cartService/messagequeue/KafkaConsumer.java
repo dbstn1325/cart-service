@@ -16,7 +16,9 @@ import tbook.cartService.dto.CartResponse;
 import tbook.cartService.entity.Cart;
 import tbook.cartService.repository.CartRepository;
 
+import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -24,6 +26,8 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class KafkaConsumer {
     private final CartRepository cartRepository;
+    private final ObjectMapper objectMapper;
+
     @KafkaListener(topics = "cart-product-info", groupId = "cartProductConsumer")
     public void consumeProductId(String kafkaMessage){
         Map<Object, Object> map = new HashMap<>();
@@ -69,6 +73,18 @@ public class KafkaConsumer {
 
     }
 
+    @KafkaListener(topics = "cart-info-topic")
+    public void consumeRemoveCart(String kafkaMessage) throws JsonProcessingException {
+        try {
+            List<Map<String, String>> cartIds = objectMapper.readValue(kafkaMessage, new TypeReference<List<Map<String, String>>>() {});
+            log.info(cartIds.toString());
+            cartIds.forEach(cartIdMap -> cartRepository.deleteById(Long.valueOf(cartIdMap.get("cartId"))));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+
     private boolean isValidData(Map<Object, Object> map) {
         return map.containsKey("userId") &&
                 map.containsKey("productId") &&
@@ -77,4 +93,7 @@ public class KafkaConsumer {
                 map.containsKey("productImage") &&
                 map.containsKey("productPrice");
     }
+
+
+
 }

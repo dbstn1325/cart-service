@@ -21,6 +21,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/cart-service")
 @RequiredArgsConstructor
+@CrossOrigin(origins = "*")
 @Slf4j
 public class CartController {
 
@@ -48,7 +49,7 @@ public class CartController {
     }
 
     // 장바구니에 상품 삭제
-    @DeleteMapping("/carts/{cartId}")
+    @DeleteMapping("/{cartId}/carts")
     public ResponseEntity<String> deleteCart(@PathVariable Long cartId) {
         //
         cartService.deleteCart(cartId);
